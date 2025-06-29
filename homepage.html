@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1E3A5F, #B0C4DE);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        #newInput {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #newInput div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Spacing between label and input */
+        }
+
+        #newInput input[type="submit"] {
+            margin-top: 10px;
+            /* Space between input row and button */
+        }
+
+        .file {
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            border: 2px dashed #007bff;
+            padding: 15px;
+            cursor: pointer;
+            display: block;
+            border-radius: 5px;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #e9ecef;
+        }
+
+        label {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        input[type="text"] {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            padding: 8px 12px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            width: 60%;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .submit_div {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .submit_div input[type="submit"] {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .submit_div input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #popupMessage {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #popupMessage p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        #saveButton {
+            display: block;
+            margin: 8px auto;
+            padding: 8px 12px;
+            font-size: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: auto;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        #saveButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+        <div class="container">
+            <h1>Image Label</h1>
+            <label for="fileInput" class="custom-file-upload">Click to Select Image</label>
+            <input type="file" id="fileInput" name="image" accept=".jpg,.jpeg" class="file" required />
+            <p id="fileInfo"></p>
+            <div id="newInput" style="display: none;">
+                <label for="textInput">Enter Label:</label>
+                <input type="text" id="textInput" name="label" placeholder="Enter Label here" required />
+                <div class="submit_div">
+                    <input type="submit" value="UPLOAD" onclick="return showPopup()">
+                </div>
+            </div>
+            <div id="popupMessage" style="display: none;">
+                Your image is ready! Please specify the save path.
+                <button id="saveButton" onclick="triggerDownload()">Save</button>
+            </div>
+    </form>
+    </div>
+    </div>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const newInput = document.getElementById('newInput');
+
+        fileInput.addEventListener('change', function () {
+            const file = fileInput.files[0];
+            if (file) {
+                const validExtensions = ['image/jpeg', 'image/jpg'];
+                if (validExtensions.includes(file.type)) {
+                    fileInfo.textContent = `File selected: ${file.name} (${file.type})`;
+                    newInput.style.display = 'block';
+                } else {
+                    fileInfo.textContent = "Invalid file type. Please select a JPG or JPEG image.";
+                    fileInput.value = "";
+                    newInput.style.display = 'none';
+                }
+            } else {
+                fileInfo.textContent = "No file selected.";
+                newInput.style.display = 'none';
+            }
+        });
+
+        //code of the popup the message and enable the saeve button
+        function showPopup() {
+            document.getElementById("popupMessage").style.display = "block";
+            return false;
+        }
+
+
+        let imageDownloadURL = null;
+
+        async function processImage() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
+
+            // Send image and label to the backend
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const blob = await response.blob(); // Get the labeled image as a blob
+                imageDownloadURL = URL.createObjectURL(blob); // Generate a temporary URL
+
+                // Show the save section
+                document.getElementById('saveSection').style.display = 'block';
+            } else {
+                alert('Error processing image. Please try again!');
+            }
+        }
+
+        function triggerDownload() {
+            if (imageDownloadURL) {
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.href = imageDownloadURL;
+                link.download = 'labeled_image.jpg'; // Default file name
+                link.click(); // Trigger the download via a simulated click
+
+                // Clean up the temporary URL
+                URL.revokeObjectURL(imageDownloadURL);
+                imageDownloadURL = null;
+            }
+        }
+    </script>
+</body>
+
+</html>
